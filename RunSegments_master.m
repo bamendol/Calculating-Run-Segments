@@ -1,28 +1,7 @@
-%Find running times --> extract run signal with GetStimulus_TS(animal, ...)
-%in get_ALL_LFPs_BEN (line 27)
-%goal: Look at beta power during running and not in running; compare
-%1) need to filter out noise from running
-%2) figure out threshold for what running is (data recorded as
-%running/not-running, with 2.5 as baseline) ["Statistically significant
-%lower CS was observed in C57BL/6J mice (18.0 m/min)"]
-%3) define threshold for how long running must occur for it to be a run (1
-%to 3 sec, but make this an input variable)
-%4) extract LFPs for running times
-%*Note: need to put runs in either cells or row (but in row may be
-%different lengths and will need to fill in empties with NaN)
+%Find running times --> extract run signal with GetStimulus_TS(animal, ...) in get_ALL_LFPs (~ line 27)
 
-%run file at H:\data
-%analysis\SLAYTraining\SLAY1-3\10-27-16\cortex\stimuli\stimuli_running
-
-%run times are in a vector right now (variable = stimuli.stim)
-%sampling rate = 25000 Hz --> 1 sec every 25000 cells of vector
-%identify all values > 2.5 (baseline)
-%when observing the mouse, when mouse is not moving, there are still
-%fluctuations up to ~ 2.6
-
-% nonRun = find(stimuli.stim < th); %all values below 2.6 are nonRun
+% nonRun = find(stimuli.stim < th); %all values below threshold are nonRun
 % stimuli.stim(nonRun) = 0; %assign all values below 2.6 --> 0
-clear Time dur merge run shiftEnd shiftStart startError segmentDur shortSegment segmentCorr
 
 tic;
 if animal == 'SLAY1-3'
@@ -75,9 +54,6 @@ startError = Time(merge + 1); %identifies start times to replace
 shiftEnd(merge) = []; %delete appropriate ends
 shiftStart(merge+1) = []; %delete problematic start times
 TimeCorr = [shiftStart shiftEnd];
-
-%shiftStart(merge+1) = shiftStart(merge) ; %replace startError with value from preceding row
-%shiftStart = unique(shiftStart,'rows');
 
 segmentDur = TimeCorr(:,2) - TimeCorr(:,1); %calculate run segment lengths
 shortSegment = find(segmentDur < mintime); %identify locations of short segments in TimeCorr
